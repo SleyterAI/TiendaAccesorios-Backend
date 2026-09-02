@@ -1,7 +1,10 @@
 package com.ConsigueVentas.TiendaAccesorios.Service;
 
 import com.ConsigueVentas.TiendaAccesorios.Dto.Category.CategoryRequestDto;
+import com.ConsigueVentas.TiendaAccesorios.Dto.Category.CategoryResponseDto;
 import com.ConsigueVentas.TiendaAccesorios.Entity.Category;
+import com.ConsigueVentas.TiendaAccesorios.Entity.Product;
+import com.ConsigueVentas.TiendaAccesorios.Mapper.Category.CategoryMapper;
 import com.ConsigueVentas.TiendaAccesorios.Repository.CategoryRepository;
 import com.ConsigueVentas.TiendaAccesorios.Service.Interface.ICategoryService;
 import lombok.RequiredArgsConstructor;
@@ -13,15 +16,22 @@ import java.util.List;
 public class CategoryService implements ICategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
     @Override
     public Category createCategory(CategoryRequestDto categoryRequestDto) {
-        return null;
+        Category category = Category.builder()
+                .name(categoryRequestDto.getName())
+                .build();
+        return categoryRepository.save(category);
     }
 
     @Override
-    public List<Category> getAllCategory() {
-        return categoryRepository.findAll();
+    public List<CategoryResponseDto> getAllCategory() {
+        return categoryRepository.findAll()
+                .stream()
+                .map(categoryMapper::toCategoryDto)
+                .toList();
     }
 
     @Override

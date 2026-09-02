@@ -1,12 +1,17 @@
 package com.ConsigueVentas.TiendaAccesorios.Service;
 
 import com.ConsigueVentas.TiendaAccesorios.Dto.Order.OrderRequestDto;
+import com.ConsigueVentas.TiendaAccesorios.Dto.Order.OrderResponseDto;
+import com.ConsigueVentas.TiendaAccesorios.Dto.Order.OrderSummary.OrderSummaryResponseDto;
 import com.ConsigueVentas.TiendaAccesorios.Dto.OrderDetail.OrderDetailRequestDto;
 import com.ConsigueVentas.TiendaAccesorios.Entity.Order;
 import com.ConsigueVentas.TiendaAccesorios.Entity.OrderDetail;
 import com.ConsigueVentas.TiendaAccesorios.Entity.Product;
+import com.ConsigueVentas.TiendaAccesorios.Entity.User;
+import com.ConsigueVentas.TiendaAccesorios.Mapper.Order.OrderMapper;
 import com.ConsigueVentas.TiendaAccesorios.Repository.OrderRepository;
 import com.ConsigueVentas.TiendaAccesorios.Repository.ProductRepository;
+import com.ConsigueVentas.TiendaAccesorios.Repository.UserRepository;
 import com.ConsigueVentas.TiendaAccesorios.Service.Interface.IOrderService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +27,7 @@ public class OrderService implements IOrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final OrderMapper orderMapper;
 
 
     /*@Override
@@ -88,16 +94,21 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public List<Order> getAllOrder() {
-        return orderRepository.findAll();
+    public List<OrderSummaryResponseDto> getAllOrder() {
+        return orderRepository.findAll()
+                .stream()
+                .map(orderMapper::toOrderSummaryDto)
+                .toList();
     }
 
     @Override
-    public Order getOrderById(Long id) {
-        return orderRepository.findById(id).
+    public OrderResponseDto getOrderById(Long id) {
+         Order order = orderRepository.findById(id).
                 orElseThrow(() ->
                         new RuntimeException("El pedido no existe")
                 );
+
+        return orderMapper.toOrderDto(order);
     }
 
     @Override
@@ -145,4 +156,14 @@ public class OrderService implements IOrderService {
         }
         return product;
     }
+
+    /*public OrderDetailResponseDto getOrderDetailById(Long id) {
+
+        OrderDetail detail = orderDetailRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Detalle de orden no encontrado")
+                );
+
+        return orderMapper.toOrderDetailDto(detail);
+    }*/
 }

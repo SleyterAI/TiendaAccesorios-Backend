@@ -2,10 +2,7 @@ package com.ConsigueVentas.TiendaAccesorios.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -13,7 +10,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "products")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -45,7 +43,6 @@ public class Product {
     private Category category;
 
     @OneToMany(mappedBy = "product")
-    @JsonIgnore
     private List<OrderDetail> orderDetail = new ArrayList<>();
 
 }

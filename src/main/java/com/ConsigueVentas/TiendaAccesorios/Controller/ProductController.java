@@ -1,5 +1,6 @@
 package com.ConsigueVentas.TiendaAccesorios.Controller;
 
+import com.ConsigueVentas.TiendaAccesorios.Dto.Product.Admin.ProductResponseAdminDto;
 import com.ConsigueVentas.TiendaAccesorios.Dto.Product.ProductRequestDto;
 import com.ConsigueVentas.TiendaAccesorios.Dto.Product.ProductResponseDto;
 import com.ConsigueVentas.TiendaAccesorios.Entity.Product;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api/product")
 @RequiredArgsConstructor
 public class ProductController {
 
@@ -30,20 +31,7 @@ public class ProductController {
     public ResponseEntity<List<ProductResponseDto>> getAllProduct(
             @RequestParam(required = false) String categoryName,
             @RequestParam(required = false) Boolean visible) {
-        List<Product> products = productService.filterProducts(categoryName, visible);
-        List<ProductResponseDto> response = products.stream()
-                .map(product -> ProductResponseDto.builder()
-                        .name(product.getName())
-                        .description(product.getDescription())
-                        .price(product.getPrice())
-                        .stock(product.getStock())
-                        .imageUrl(product.getImageUrl())
-                        .visible(product.getVisible())
-                        .categoryName(product.getCategory().getName())
-                        .build()
-                )
-                .toList();
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(productService.filterProducts(categoryName, visible));
     }
 
     @GetMapping("/{id}")
@@ -52,7 +40,7 @@ public class ProductController {
     }
 
     @GetMapping("/admin")
-    public ResponseEntity<List<Product>> getProductAdmin() {
+    public ResponseEntity<List<ProductResponseAdminDto>> getProductAdmin() {
         return ResponseEntity.ok(productService.getAllProductAdmin());
     }
 
@@ -63,9 +51,9 @@ public class ProductController {
     }
 
     @PatchMapping("/{id}/visible")
-    public ResponseEntity<Product> changeVisible(@PathVariable Long id, @RequestBody Product newVisible) {
+    public ResponseEntity<String> toggleProductVisibility(@PathVariable Long id, @RequestBody Product newVisible) {
         Product product = productService.toggleProductVisibility(id, newVisible.getVisible());
-        return ResponseEntity.ok(product);
+        return ResponseEntity.ok("Product Id: "+product.getId()+", visible now is: "+product.getVisible());
     }
 
     @DeleteMapping("/{id}")

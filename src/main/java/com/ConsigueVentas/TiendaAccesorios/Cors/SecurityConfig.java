@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -54,7 +55,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
+        http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
 
                 .sessionManagement(session ->
@@ -62,10 +63,10 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/user/**").permitAll()
-                        .requestMatchers("/api/category").permitAll()
+                        .requestMatchers("/api/category/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()      // login y registro: público
-                        .requestMatchers("/api/products/**").permitAll() // ver productos: público
-                        .requestMatchers("/api/order/**").authenticated() // pedidos: requiere login
+                        .requestMatchers("/api/product/**").permitAll() // ver productos: público
+                        .requestMatchers("/api/order/**").permitAll() // pedidos: requiere login
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

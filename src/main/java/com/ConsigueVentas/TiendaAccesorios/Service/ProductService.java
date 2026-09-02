@@ -1,6 +1,8 @@
 package com.ConsigueVentas.TiendaAccesorios.Service;
 
+import com.ConsigueVentas.TiendaAccesorios.Dto.Product.Admin.ProductResponseAdminDto;
 import com.ConsigueVentas.TiendaAccesorios.Dto.Product.ProductRequestDto;
+import com.ConsigueVentas.TiendaAccesorios.Dto.Product.ProductResponseDto;
 import com.ConsigueVentas.TiendaAccesorios.Entity.Product;
 import com.ConsigueVentas.TiendaAccesorios.Repository.ProductRepository;
 import com.ConsigueVentas.TiendaAccesorios.Service.Interface.IProductService;
@@ -40,8 +42,21 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public List<Product> getAllProductAdmin() {
-        return productRepository.findAll();
+    public List<ProductResponseAdminDto> getAllProductAdmin() {
+        List<Product> products = productRepository.findAll();
+        return products.stream()
+                .map(product -> ProductResponseAdminDto.builder()
+                        .id(product.getId())
+                        .name(product.getName())
+                        .description(product.getDescription())
+                        .price(product.getPrice())
+                        .stock(product.getStock())
+                        .imageUrl(product.getImageUrl())
+                        .visible(product.getVisible())
+                        .categoryName(product.getCategory().getName())
+                        .build()
+                )
+                .toList();
     }
 
     @Override
@@ -75,7 +90,7 @@ public class ProductService implements IProductService {
     }
 
 
-    public List<Product> filterProducts(String categoryName, Boolean visible) {
+    public List<ProductResponseDto> filterProducts(String categoryName, Boolean visible) {
         if (categoryName != null && visible != null) {
             return productRepository.findByCategory_NameAndVisible(categoryName, visible);
         } else if (categoryName != null) {
@@ -83,16 +98,26 @@ public class ProductService implements IProductService {
         } else if (visible != null) {
             return productRepository.findByVisible(visible);
         }
-        return productRepository.findAll();
+        List<Product> products = productRepository.findAll();
+         return products.stream()
+                .map(product -> ProductResponseDto.builder()
+                        .name(product.getName())
+                        .description(product.getDescription())
+                        .price(product.getPrice())
+                        .stock(product.getStock())
+                        .imageUrl(product.getImageUrl())
+                        .visible(product.getVisible())
+                        .categoryName(product.getCategory().getName())
+                        .build()
+                )
+                .toList();
     }
 
     public Product toggleProductVisibility(Long id, Boolean newVisibility) {
-
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
         product.setVisible(newVisibility);
-
         return productRepository.save(product);
     }
 }

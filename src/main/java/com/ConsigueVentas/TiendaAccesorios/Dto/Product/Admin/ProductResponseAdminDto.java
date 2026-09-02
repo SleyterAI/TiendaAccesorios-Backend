@@ -1,4 +1,4 @@
-package com.ConsigueVentas.TiendaAccesorios.Dto.Product;
+package com.ConsigueVentas.TiendaAccesorios.Dto.Product.Admin;
 
 import lombok.Builder;
 import lombok.Data;
@@ -7,8 +7,8 @@ import java.math.BigDecimal;
 
 @Data
 @Builder
-public class ProductResponseDto {
-
+public class ProductResponseAdminDto {
+    private Long id;
     private String name;
     private String description;
     private BigDecimal price;

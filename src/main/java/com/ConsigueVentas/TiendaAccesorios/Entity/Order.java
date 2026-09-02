@@ -1,11 +1,8 @@
 package com.ConsigueVentas.TiendaAccesorios.Entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,7 +11,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "orders")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order {
@@ -35,7 +33,7 @@ public class Order {
     @Column(nullable = false)
     private LocalDate date;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 30)
     private String status;
     //pendiente, en preparacion, entregado
 
@@ -47,7 +45,6 @@ public class Order {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @JsonManagedReference
     private List<OrderDetail> orderDetail = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

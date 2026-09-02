@@ -1,6 +1,8 @@
 package com.ConsigueVentas.TiendaAccesorios.Service.Interface;
 
+import com.ConsigueVentas.TiendaAccesorios.Dto.Product.Admin.ProductResponseAdminDto;
 import com.ConsigueVentas.TiendaAccesorios.Dto.Product.ProductRequestDto;
+import com.ConsigueVentas.TiendaAccesorios.Dto.Product.ProductResponseDto;
 import com.ConsigueVentas.TiendaAccesorios.Entity.Product;
 
 import java.util.List;
@@ -12,7 +14,7 @@ public interface IProductService {
 
     //Read
     List<Product> getAllProduct();
-    List<Product> getAllProductAdmin();
+    List<ProductResponseAdminDto> getAllProductAdmin();
     Product getProductById(Long id);
 
     //Update

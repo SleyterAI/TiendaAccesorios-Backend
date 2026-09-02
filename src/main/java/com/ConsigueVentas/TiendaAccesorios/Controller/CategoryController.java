@@ -1,6 +1,7 @@
 package com.ConsigueVentas.TiendaAccesorios.Controller;
 
 import com.ConsigueVentas.TiendaAccesorios.Dto.Category.CategoryRequestDto;
+import com.ConsigueVentas.TiendaAccesorios.Dto.Category.CategoryResponseDto;
 import com.ConsigueVentas.TiendaAccesorios.Entity.Category;
 import com.ConsigueVentas.TiendaAccesorios.Service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Category>> getAllCategoria() {
+    public ResponseEntity<List<CategoryResponseDto>> getAllCategoria() {
 
         return ResponseEntity.ok(categoryService.getAllCategory());
     }
