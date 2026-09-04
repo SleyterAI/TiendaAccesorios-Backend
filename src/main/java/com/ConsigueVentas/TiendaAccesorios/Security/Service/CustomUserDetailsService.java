@@ -1,4 +1,4 @@
-package com.ConsigueVentas.TiendaAccesorios.Security;
+package com.ConsigueVentas.TiendaAccesorios.Security.Service;
 
 
 import com.ConsigueVentas.TiendaAccesorios.User.Repository.UserRepository;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UsuarioDetailsService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 

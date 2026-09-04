@@ -1,15 +1,15 @@
 package com.ConsigueVentas.TiendaAccesorios.User.Dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
 @NoArgsConstructor
-@Data
 @AllArgsConstructor
-public class UserResponseDto {
-    private Long id;
-    private String username;
-    private String email;
+public class RolNMessageResponseDto {
     private String role;
+    private String message;
 }

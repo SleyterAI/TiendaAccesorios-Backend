@@ -2,6 +2,8 @@ package com.ConsigueVentas.TiendaAccesorios.Security;
 
 
 
+import com.ConsigueVentas.TiendaAccesorios.Security.Jwt.JwtAuthFilter;
+import com.ConsigueVentas.TiendaAccesorios.Security.Service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 
@@ -30,7 +32,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UsuarioDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
     private final JwtAuthFilter jwtAuthFilter;
     private final CorsConfigurationSource corsConfigurationSource;
 
@@ -64,7 +66,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/category/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()      // login y registro: público
                         .requestMatchers("/api/product/**").permitAll() // ver productos: público
-                        .requestMatchers("/api/order/**").permitAll() // pedidos: requiere login
+                        .requestMatchers("/api/order/**").authenticated() // pedidos: requiere login
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
