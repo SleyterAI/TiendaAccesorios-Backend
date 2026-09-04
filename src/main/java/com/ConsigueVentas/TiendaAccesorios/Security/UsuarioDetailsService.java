@@ -1,10 +1,9 @@
 package com.ConsigueVentas.TiendaAccesorios.Security;
 
 
-import com.ConsigueVentas.TiendaAccesorios.Repository.UserRepository;
-import com.ConsigueVentas.TiendaAccesorios.Entity.User;
+import com.ConsigueVentas.TiendaAccesorios.User.Repository.UserRepository;
+import com.ConsigueVentas.TiendaAccesorios.User.Entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
