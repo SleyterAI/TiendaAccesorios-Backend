@@ -30,7 +30,7 @@ public class OrderController {
 
     @GetMapping
     /*@PreAuthorize("hasRole('ADMIN')")*/
-    public ResponseEntity<List<OrderSummaryResponseDto>> getAllPedido() {
+    public ResponseEntity<List<OrderSummaryResponseDto>> getAllOrder() {
         return ResponseEntity.ok(orderService.getAllOrder());
     }
 
