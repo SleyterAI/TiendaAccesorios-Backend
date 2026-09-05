@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface IOrderService {
     //Create
-    Order createOrder(OrderRequestDto orderRequestDto);
+    OrderResponseDto createOrder(String email, OrderRequestDto orderRequestDto);
 
     //Read
     List<OrderSummaryResponseDto> getAllOrder();

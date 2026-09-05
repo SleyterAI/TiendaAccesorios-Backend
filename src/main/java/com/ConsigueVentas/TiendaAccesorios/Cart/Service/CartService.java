@@ -107,7 +107,7 @@ public class CartService implements ICartService {
         return cartRepository.findByUserEmail(email)
                 .orElseGet(() -> {
                     User user = userRepository.findByEmail(email)
-                            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                            .orElseThrow(() -> new RuntimeException("User not found"));
                     Cart newCart = Cart.builder()
                             .user(user)
                             .totalPrice(BigDecimal.ZERO)
@@ -119,15 +119,15 @@ public class CartService implements ICartService {
 
     private Product findProductOrThrow(Long productId) {
         return productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Product not found"));
     }
 
     private void validateStockAndLimit(Product product, int quantity) {
         if (quantity > 4) {
-            throw new IllegalArgumentException("No puedes comprar más de 4 unidades del producto: " + product.getName());
+            throw new IllegalArgumentException("Only 4 products available: " + product.getName());
         }
         if (product.getStock() < quantity) {
-            throw new IllegalArgumentException("Stock insuficiente para el producto: " + product.getName());
+            throw new IllegalArgumentException("Insufficient stock for product: " + product.getName());
         }
     }
 

@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,9 +23,10 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<String> createOrder(@Valid @RequestBody OrderRequestDto orderRequestDto) {
-        Order order = orderService.createOrder(orderRequestDto); //verificar si el frontend usa datos del
-                                                                //backend para verificar los pedidos
+    public ResponseEntity<String> createOrder(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody OrderRequestDto orderRequestDto) {
+        orderService.createOrder(userDetails.getUsername(), orderRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("Order created");
     }
 

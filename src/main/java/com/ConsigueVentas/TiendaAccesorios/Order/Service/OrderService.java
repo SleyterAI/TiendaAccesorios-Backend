@@ -1,5 +1,8 @@
 package com.ConsigueVentas.TiendaAccesorios.Order.Service;
 
+import com.ConsigueVentas.TiendaAccesorios.Cart.Entity.Cart;
+import com.ConsigueVentas.TiendaAccesorios.Cart.Entity.CartItem;
+import com.ConsigueVentas.TiendaAccesorios.Cart.Repository.CartRepository;
 import com.ConsigueVentas.TiendaAccesorios.Order.Dto.OrderRequestDto;
 import com.ConsigueVentas.TiendaAccesorios.Order.Dto.OrderResponseDto;
 import com.ConsigueVentas.TiendaAccesorios.Order.Dto.OrderSummary.OrderSummaryResponseDto;
@@ -17,78 +20,84 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class OrderService implements IOrderService {
 
     private final OrderRepository orderRepository;
+    private final CartRepository cartRepository;
     private final ProductRepository productRepository;
     private final OrderMapper orderMapper;
 
 
-    /*@Override
-    public Pedido createPedido(Pedido pedido) {
-        return pedidoRepository.save(pedido);
-    }*/
-
     @Override
-    @Transactional
-    public Order createOrder(OrderRequestDto orderRequestDto) {
+    public OrderResponseDto createOrder(String email, OrderRequestDto orderRequestDto) {
+
+        // save cart from user
+        Cart cart = cartRepository.findByUserEmail(email)
+                .orElseThrow(() -> new RuntimeException("No user cart active"));
+
+        if (cart.getItems().isEmpty()) {
+            throw new IllegalStateException("Empty cart the order is not possible");
+        }
 
         Order order = new Order();
-
-        //datos q vienen del request
-        order.setUser(orderRequestDto.getUser());
+        //data form request
+        order.setUser(cart.getUser());
         order.setPhoneNumber(orderRequestDto.getPhoneNumber());
         order.setAddress(orderRequestDto.getAddress());
 
-        //datos backend no request
         order.setDate(LocalDate.now());
         order.setStatus("Pendiente");
 
-        //se crea el total tipo BigDecimal
-        BigDecimal total = BigDecimal.ZERO;
+        order.setTotal(cart.getTotalPrice());
+        List<OrderDetail> orderDetails = new ArrayList<>();
 
-        //recorrido de la lista detallePedidoRequestDto que se encuentra en pedidoRequest
-        for (OrderDetailRequestDto orderDetailRequestDto : orderRequestDto.getOrderDetailRequestDto()) {
-
-            //guardar producto, validar producto y stock
-            Product product = findProductAndValidateStock(orderDetailRequestDto);
-
-            Integer quantity = orderDetailRequestDto.getQuantity();
-
-            //se obtiene el precio por backend de la bd
+        //use itemCart for validation n add to orderDetails
+        for (CartItem cartItem : cart.getItems()) {
+            Product product = cartItem.getProduct();
+            Integer quantity = cartItem.getQuantity();
+            Integer stock = product.getStock();
             BigDecimal unitPrice = product.getPrice();
-            //se calcula el subtotal del pedido
-            BigDecimal subtotal = unitPrice.multiply(
-                    BigDecimal.valueOf(orderDetailRequestDto.getQuantity()));
 
-            //se crea el detallePedido
+            if (stock < quantity) {
+                throw new IllegalStateException(
+                        "Out of stock for product: " + product.getName());
+            }
+
+            product.setStock(stock - quantity);
+            productRepository.save(product);
+
+            //subtotal
+            BigDecimal subtotal = unitPrice.multiply(
+                    BigDecimal.valueOf(quantity));
+
+            //add itemCart to orderDetail
             OrderDetail orderDetail = OrderDetail.builder()
-                    .quantity(orderDetailRequestDto.getQuantity())
+                    .quantity(quantity)
                     .unitPrice(unitPrice)
                     .subTotal(subtotal)
                     .product(product)
                     .order(order)
                     .build();
 
+            orderDetails.add(orderDetail);
 
-            //se agrega el detallePedido al pedido general
-            order.getOrderDetail().add(orderDetail);
-
-            //se calcula el total segun los subtotal
-            total = total.add(subtotal);
-            // Descontar stock
-            product.setStock(product.getStock() - quantity);
         }
+        order.setOrderDetail(orderDetails);
+        //save order in bd
+        Order savedOrder = orderRepository.save(order);
 
-        //se añade el total al pedido general
-        order.setTotal(total);
+        //clear cart after successfully purchase
+        cart.getItems().clear();
+        cart.setTotalPrice(BigDecimal.ZERO);
+        cartRepository.save(cart);
 
-        //se guarda el pedido
-        return orderRepository.save(order);
+        return orderMapper.toOrderDto(savedOrder);
     }
 
     @Override
@@ -140,28 +149,4 @@ public class OrderService implements IOrderService {
         return orderRepository.save(order);
     }
 
-
-    private Product findProductAndValidateStock(OrderDetailRequestDto requestDto) {
-        Product product = productRepository
-                .findById(requestDto.getProductoId())
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-
-        Integer quantity = requestDto.getQuantity();
-
-        if (product.getStock() < quantity || requestDto.getQuantity() == 0) {
-            throw new RuntimeException("Stock insuficiente para el producto: " + product.getName()
-                    + ". Stock disponible: " + product.getStock() + ", cantidad solicitada: " + quantity);
-        }
-        return product;
-    }
-
-    /*public OrderDetailResponseDto getOrderDetailById(Long id) {
-
-        OrderDetail detail = orderDetailRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Detalle de orden no encontrado")
-                );
-
-        return orderMapper.toOrderDetailDto(detail);
-    }*/
 }
