@@ -36,7 +36,7 @@ public class UserService implements IUserService {
         user.setPassword(
                 passwordEncoder.encode(registerRequestDto.getPassword())
         );
-        user.setRole("USER");
+        user.setRole("ADMIN");
 
         userRepository.save(user);
 

@@ -60,9 +60,19 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Product getProductById(Long id) {
-        return productRepository.findById(id)
+    public ProductResponseDto getProductById(Long id) {
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("El producto no existe"));
+        return ProductResponseDto.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .stock(product.getStock())
+                .imageUrl(product.getImageUrl())
+                .visible(product.getVisible())
+                .categoryName(product.getCategory().getName())
+                .build();
     }
 
     @Override
@@ -101,6 +111,7 @@ public class ProductService implements IProductService {
         List<Product> products = productRepository.findAll();
          return products.stream()
                 .map(product -> ProductResponseDto.builder()
+                        .id(product.getId())
                         .name(product.getName())
                         .description(product.getDescription())
                         .price(product.getPrice())

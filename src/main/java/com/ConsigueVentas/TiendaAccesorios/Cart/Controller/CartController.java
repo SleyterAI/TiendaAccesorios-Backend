@@ -17,11 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class CartController {
     private final CartService cartService;
 
-    @GetMapping
-    public ResponseEntity<CartResponseDto> getCart(@AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(cartService.getCartByUserEmail(userDetails.getUsername()));
-    }
-
     @PostMapping("/item")
     public ResponseEntity<CartResponseDto> addOrUpdateItem(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -29,11 +24,14 @@ public class CartController {
         return ResponseEntity.ok(cartService.addOrUpdateItem(userDetails.getUsername(), request));
     }
 
-    @PutMapping("/sync")
-    public ResponseEntity<CartResponseDto> syncCart(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @Valid @RequestBody SyncCartRequestDto request) {
-        return ResponseEntity.ok(cartService.syncCart(userDetails.getUsername(), request.getItems()));
+    @GetMapping
+    public ResponseEntity<CartResponseDto> getCart(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(cartService.getCartByUserEmail(userDetails.getUsername()));
+    }
+
+    @DeleteMapping("/clear")
+    public ResponseEntity<CartResponseDto> clearCart(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(cartService.clearCart(userDetails.getUsername()));
     }
 
     @DeleteMapping("/item/{productId}")
@@ -43,8 +41,17 @@ public class CartController {
         return ResponseEntity.ok(cartService.removeItem(userDetails.getUsername(), productId));
     }
 
-    @DeleteMapping("/clear")
-    public ResponseEntity<CartResponseDto> clearCart(@AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(cartService.clearCart(userDetails.getUsername()));
+    @PutMapping("/sync")
+    public ResponseEntity<CartResponseDto> syncCart(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody SyncCartRequestDto request) {
+        return ResponseEntity.ok(cartService.syncCart(userDetails.getUsername(), request.getItems()));
+    }
+
+    @PatchMapping("/item/{productId}/decrease")
+    public ResponseEntity<CartResponseDto> decreaseItem(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long productId) {
+        return ResponseEntity.ok(cartService.decreaseItem(userDetails.getUsername(), productId));
     }
 }

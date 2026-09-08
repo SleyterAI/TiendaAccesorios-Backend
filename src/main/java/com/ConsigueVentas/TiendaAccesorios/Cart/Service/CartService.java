@@ -2,6 +2,8 @@ package com.ConsigueVentas.TiendaAccesorios.Cart.Service;
 
 import com.ConsigueVentas.TiendaAccesorios.Cart.Dto.CartResponseDto;
 import com.ConsigueVentas.TiendaAccesorios.Cart.Dto.CartItem.CartItemRequestDto;
+import com.ConsigueVentas.TiendaAccesorios.Cart.Dto.CartSyncItem.CartSyncItemRequestDto;
+import com.ConsigueVentas.TiendaAccesorios.Cart.Dto.MessageResponseDto;
 import com.ConsigueVentas.TiendaAccesorios.Cart.Entity.Cart;
 import com.ConsigueVentas.TiendaAccesorios.Cart.Entity.CartItem;
 import com.ConsigueVentas.TiendaAccesorios.Product.Entity.Product;
@@ -35,42 +37,26 @@ public class CartService implements ICartService {
         Cart cart = getOrCreateCart(email);
         Product product = findProductOrThrow(request.getProductId());
 
-        validateStockAndLimit(product, request.getQuantity());
+        int quantityAdded = 1;
+        validateStockAndLimit(product, quantityAdded);
 
         Optional<CartItem> existingItem = cart.getItems().stream()
                 .filter(item -> item.getProduct().getId().equals(product.getId()))
                 .findFirst();
 
         if (existingItem.isPresent()) {
-            int newQuantity = existingItem.get().getQuantity() + request.getQuantity();
+            CartItem item = existingItem.get();
+
+            int newQuantity = item.getQuantity() + quantityAdded;
+
             validateStockAndLimit(product, newQuantity);
-            existingItem.get().setQuantity(newQuantity);
+
+            item.setQuantity(newQuantity);
         } else {
             CartItem newItem = CartItem.builder()
                     .cart(cart)
                     .product(product)
-                    .quantity(request.getQuantity())
-                    .build();
-            cart.getItems().add(newItem);
-        }
-
-        calculateTotals(cart);
-        return cartMapper.toDto(cartRepository.save(cart));
-    }
-
-    @Override
-    public CartResponseDto syncCart(String email, List<CartItemRequestDto> itemsDto) {
-        Cart cart = getOrCreateCart(email);
-        cart.getItems().clear(); // Limpia los anteriores para sincronizar la lista completa enviada desde Angular
-
-        for (CartItemRequestDto dto : itemsDto) {
-            Product product = findProductOrThrow(dto.getProductId());
-            validateStockAndLimit(product, dto.getQuantity());
-
-            CartItem newItem = CartItem.builder()
-                    .cart(cart)
-                    .product(product)
-                    .quantity(dto.getQuantity())
+                    .quantity(quantityAdded)
                     .build();
             cart.getItems().add(newItem);
         }
@@ -99,6 +85,46 @@ public class CartService implements ICartService {
         cart.getItems().removeIf(item -> item.getProduct().getId().equals(productId));
 
         calculateTotals(cart);
+        return cartMapper.toDto(cartRepository.save(cart));
+    }
+
+    @Override
+    public CartResponseDto syncCart(String email, List<CartSyncItemRequestDto> itemsDto) {
+        Cart cart = getOrCreateCart(email);
+        cart.getItems().clear(); // Limpia los anteriores para sincronizar la lista completa enviada desde Angular
+
+        for (CartSyncItemRequestDto dto : itemsDto) {
+            Product product = findProductOrThrow(dto.getProductId());
+            validateStockAndLimit(product, dto.getQuantity());
+
+            CartItem newItem = CartItem.builder()
+                    .cart(cart)
+                    .product(product)
+                    .quantity(dto.getQuantity())
+                    .build();
+            cart.getItems().add(newItem);
+        }
+
+        calculateTotals(cart);
+        return cartMapper.toDto(cartRepository.save(cart));
+    }
+
+    @Override
+    public CartResponseDto decreaseItem(String email, Long productId){
+        Cart cart = getOrCreateCart(email);
+
+        CartItem item = cart.getItems().stream()
+                .filter(cartItem ->
+                        cartItem.getProduct().getId().equals(productId))
+                .findFirst()
+                .orElseThrow(() ->
+                        new RuntimeException("Product not found in cart"));
+        if (item.getQuantity() == 1) {
+            return removeItem(email, productId);
+        }
+        item.setQuantity(item.getQuantity() - 1);
+        calculateTotals(cart);
+
         return cartMapper.toDto(cartRepository.save(cart));
     }
 

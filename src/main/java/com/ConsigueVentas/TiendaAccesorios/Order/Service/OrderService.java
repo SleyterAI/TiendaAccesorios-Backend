@@ -52,7 +52,7 @@ public class OrderService implements IOrderService {
         order.setAddress(orderRequestDto.getAddress());
 
         order.setDate(LocalDate.now());
-        order.setStatus("Pendiente");
+        order.setStatus("PENDIENTE");
 
         order.setTotal(cart.getTotalPrice());
         List<OrderDetail> orderDetails = new ArrayList<>();
