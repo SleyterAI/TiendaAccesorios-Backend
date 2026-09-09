@@ -1,6 +1,7 @@
 package com.ConsigueVentas.TiendaAccesorios.Product.Service.Interface;
 
 import com.ConsigueVentas.TiendaAccesorios.Product.Dto.Admin.ProductResponseAdminDto;
+import com.ConsigueVentas.TiendaAccesorios.Product.Dto.ProductByIdResponseDto;
 import com.ConsigueVentas.TiendaAccesorios.Product.Dto.ProductRequestDto;
 import com.ConsigueVentas.TiendaAccesorios.Product.Dto.ProductResponseDto;
 import com.ConsigueVentas.TiendaAccesorios.Product.Entity.Product;
@@ -15,7 +16,7 @@ public interface IProductService {
     //Read
     List<Product> getAllProduct();
     List<ProductResponseAdminDto> getAllProductAdmin();
-    ProductResponseDto getProductById(Long id);
+    ProductByIdResponseDto getProductById(Long id);
 
     //Update
     Product updateProduct(Long id, ProductRequestDto product);

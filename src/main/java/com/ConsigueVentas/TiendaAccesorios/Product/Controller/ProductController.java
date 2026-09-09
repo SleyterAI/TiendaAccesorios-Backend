@@ -1,6 +1,7 @@
 package com.ConsigueVentas.TiendaAccesorios.Product.Controller;
 
 import com.ConsigueVentas.TiendaAccesorios.Product.Dto.Admin.ProductResponseAdminDto;
+import com.ConsigueVentas.TiendaAccesorios.Product.Dto.ProductByIdResponseDto;
 import com.ConsigueVentas.TiendaAccesorios.Product.Dto.ProductRequestDto;
 import com.ConsigueVentas.TiendaAccesorios.Product.Dto.ProductResponseDto;
 import com.ConsigueVentas.TiendaAccesorios.Product.Entity.Product;
@@ -34,7 +35,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponseDto> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductByIdResponseDto> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 

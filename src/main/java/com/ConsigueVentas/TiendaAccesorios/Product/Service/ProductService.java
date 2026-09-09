@@ -1,6 +1,7 @@
 package com.ConsigueVentas.TiendaAccesorios.Product.Service;
 
 import com.ConsigueVentas.TiendaAccesorios.Product.Dto.Admin.ProductResponseAdminDto;
+import com.ConsigueVentas.TiendaAccesorios.Product.Dto.ProductByIdResponseDto;
 import com.ConsigueVentas.TiendaAccesorios.Product.Dto.ProductRequestDto;
 import com.ConsigueVentas.TiendaAccesorios.Product.Dto.ProductResponseDto;
 import com.ConsigueVentas.TiendaAccesorios.Product.Entity.Product;
@@ -60,10 +61,10 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public ProductResponseDto getProductById(Long id) {
+    public ProductByIdResponseDto getProductById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("El producto no existe"));
-        return ProductResponseDto.builder()
+        return ProductByIdResponseDto.builder()
                 .id(product.getId())
                 .name(product.getName())
                 .description(product.getDescription())
@@ -71,7 +72,7 @@ public class ProductService implements IProductService {
                 .stock(product.getStock())
                 .imageUrl(product.getImageUrl())
                 .visible(product.getVisible())
-                .categoryName(product.getCategory().getName())
+                .category(product.getCategory())
                 .build();
     }
 
