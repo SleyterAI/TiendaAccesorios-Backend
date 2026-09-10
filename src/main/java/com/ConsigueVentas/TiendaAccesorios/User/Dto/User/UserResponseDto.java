@@ -1,4 +1,4 @@
-package com.ConsigueVentas.TiendaAccesorios.User.Dto;
+package com.ConsigueVentas.TiendaAccesorios.User.Dto.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

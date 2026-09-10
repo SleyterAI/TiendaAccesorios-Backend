@@ -3,7 +3,7 @@ package com.ConsigueVentas.TiendaAccesorios.User.Service;
 import com.ConsigueVentas.TiendaAccesorios.GlobalException.DuplicateResourceException;
 import com.ConsigueVentas.TiendaAccesorios.User.Dto.Register.RegisterRequestDto;
 import com.ConsigueVentas.TiendaAccesorios.User.Dto.RolNMessageResponseDto;
-import com.ConsigueVentas.TiendaAccesorios.User.Dto.UserResponseDto;
+import com.ConsigueVentas.TiendaAccesorios.User.Dto.User.UserResponseDto;
 import com.ConsigueVentas.TiendaAccesorios.User.Dto.MessageResponseDto;
 import com.ConsigueVentas.TiendaAccesorios.User.Entity.User;
 import com.ConsigueVentas.TiendaAccesorios.User.Repository.UserRepository;

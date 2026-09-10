@@ -2,7 +2,7 @@ package com.ConsigueVentas.TiendaAccesorios.User.Service.Interface;
 
 import com.ConsigueVentas.TiendaAccesorios.User.Dto.MessageResponseDto;
 import com.ConsigueVentas.TiendaAccesorios.User.Dto.Register.RegisterRequestDto;
-import com.ConsigueVentas.TiendaAccesorios.User.Dto.UserResponseDto;
+import com.ConsigueVentas.TiendaAccesorios.User.Dto.User.UserResponseDto;
 import com.ConsigueVentas.TiendaAccesorios.User.Entity.User;
 
 import java.util.List;

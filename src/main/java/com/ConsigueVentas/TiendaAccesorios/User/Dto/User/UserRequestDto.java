@@ -1,4 +1,4 @@
-package com.ConsigueVentas.TiendaAccesorios.User.Dto;
+package com.ConsigueVentas.TiendaAccesorios.User.Dto.User;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
