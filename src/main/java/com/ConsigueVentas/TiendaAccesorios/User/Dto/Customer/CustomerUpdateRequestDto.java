@@ -1,33 +1,30 @@
 package com.ConsigueVentas.TiendaAccesorios.User.Dto.Customer;
 
 import com.ConsigueVentas.TiendaAccesorios.User.Dto.Card.CardRequestDto;
-import com.ConsigueVentas.TiendaAccesorios.User.Entity.Card;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomerRequestDto {
-    @NotBlank(message = "Name cant be blank")
+public class CustomerUpdateRequestDto {
+
+    @NotBlank(message = "Name can't be blank")
     private String name;
 
-    @NotBlank(message = "Name cant be blank")
+    @NotBlank(message = "Last name can't be blank")
     private String lastName;
 
-    @NotBlank(message = "Name cant be blank")
+    @NotBlank(message = "Phone number can't be blank")
     private String phoneNumber;
 
-    @NotBlank(message = "Name cant be blank")
+    @NotBlank(message = "Address can't be blank")
     private String address;
 
-    @NotNull(message = "Name cant be blank")
+    @NotNull(message = "Card can't be null")
     private CardRequestDto card;
-
 }
+

@@ -4,9 +4,11 @@ import com.ConsigueVentas.TiendaAccesorios.User.Dto.Card.CardRequestDto;
 import com.ConsigueVentas.TiendaAccesorios.User.Dto.Card.CardResponseDto;
 import com.ConsigueVentas.TiendaAccesorios.User.Dto.Customer.CustomerRequestDto;
 import com.ConsigueVentas.TiendaAccesorios.User.Dto.Customer.CustomerResponseDto;
+import com.ConsigueVentas.TiendaAccesorios.User.Dto.Customer.CustomerUpdateRequestDto;
 import com.ConsigueVentas.TiendaAccesorios.User.Entity.Card;
 import com.ConsigueVentas.TiendaAccesorios.User.Entity.Customer;
 import com.ConsigueVentas.TiendaAccesorios.User.Entity.User;
+import com.ConsigueVentas.TiendaAccesorios.User.Mapper.CustomerMapper;
 import com.ConsigueVentas.TiendaAccesorios.User.Repository.CustomerRepository;
 import com.ConsigueVentas.TiendaAccesorios.User.Repository.UserRepository;
 import com.ConsigueVentas.TiendaAccesorios.User.Service.Interface.ICustomerInterface;
@@ -14,19 +16,23 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class CustomerService implements ICustomerInterface {
     private final CustomerRepository customerRepository;
     private final UserRepository userRepository;
+    private final CustomerMapper customerMapper;
+
 
     @Override
     public CustomerResponseDto getCustomerByUserEmail(String userEmail) {
         Customer customer = customerRepository.findByUserEmail(userEmail)
-                .orElseThrow(() ->
-                        new RuntimeException("Customer not found"));
-        CardResponseDto cardResponseDto = CardResponseDto.builder()
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+
+        /*CardResponseDto cardResponseDto = CardResponseDto.builder()
                 .cardNumber(customer.getCard().getCardNumber())
                 .expirationDate(customer.getCard().getExpirationDate())
                 .build();
@@ -36,13 +42,13 @@ public class CustomerService implements ICustomerInterface {
                 .phoneNumber(customer.getPhoneNumber())
                 .address(customer.getAddress())
                 .card(cardResponseDto)
-                .build();
-
+                .build();*/
+        return customerMapper.toResponseDto(customer);
     }
 
     @Override
-    public Customer createCustomer(CustomerRequestDto customerRequestDto) {
-        User user = userRepository.findById(customerRequestDto.getUserId())
+    public Customer createCustomer(String userEmail, CustomerRequestDto customerRequestDto) {
+        User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() ->
                         new RuntimeException("User not found")
                 );
@@ -62,4 +68,27 @@ public class CustomerService implements ICustomerInterface {
         card.setCustomer(customer);
         return customerRepository.save(customer);
     }
+
+    @Override
+    public CustomerResponseDto updateCustomer(String userEmail, CustomerUpdateRequestDto request) {
+        Customer customer = customerRepository.findByUserEmail(userEmail)
+                .orElseThrow(() ->
+                        new RuntimeException("Customer not found"));
+
+        customer.setName(request.getName());
+        customer.setLastName(request.getLastName());
+        customer.setPhoneNumber(request.getPhoneNumber());
+        customer.setAddress(request.getAddress());
+
+        String cardNumber = request.getCard().getCardNumber();
+        LocalDate expirationDate = request.getCard().getExpirationDate();
+
+        customer.getCard().setCardNumber(cardNumber);
+        customer.getCard().setExpirationDate(expirationDate);
+
+        Customer savedCustomer = customerRepository.save(customer);
+
+        return customerMapper.toResponseDto(savedCustomer);
+    }
+
 }

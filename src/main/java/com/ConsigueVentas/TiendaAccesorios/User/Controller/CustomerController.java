@@ -2,6 +2,7 @@ package com.ConsigueVentas.TiendaAccesorios.User.Controller;
 
 import com.ConsigueVentas.TiendaAccesorios.User.Dto.Customer.CustomerRequestDto;
 import com.ConsigueVentas.TiendaAccesorios.User.Dto.Customer.CustomerResponseDto;
+import com.ConsigueVentas.TiendaAccesorios.User.Dto.Customer.CustomerUpdateRequestDto;
 import com.ConsigueVentas.TiendaAccesorios.User.Entity.Customer;
 import com.ConsigueVentas.TiendaAccesorios.User.Service.CustomerService;
 import jakarta.validation.Valid;
@@ -30,11 +31,16 @@ public class CustomerController {
 
     @PostMapping
     public ResponseEntity<String> createCustomer(
-            @Valid @RequestBody CustomerRequestDto customerRequestDto){
-        System.out.println("DTO completo: " + customerRequestDto);
-        System.out.println("USER ID: " + customerRequestDto.getUserId());
-        customerService.createCustomer(customerRequestDto);
+            Authentication authentication,
+            @Valid @RequestBody CustomerRequestDto requestDto){
+        customerService.createCustomer(authentication.getName(), requestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body("Customer created correctly");
+    }
+
+    @PutMapping
+    public ResponseEntity<CustomerResponseDto> updateCustomer(
+            Authentication authentication, @Valid @RequestBody CustomerUpdateRequestDto updateRequest) {
+        return ResponseEntity.ok(customerService.updateCustomer(authentication.getName(), updateRequest));
     }
 }
