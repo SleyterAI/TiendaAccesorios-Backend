@@ -124,7 +124,7 @@ public class ProductService implements IProductService {
                 )
                 .toList();
     }
-    
+
     public Product toggleProductVisibility(Long id, Boolean newVisibility)  {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
